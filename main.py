@@ -1,2 +1,4 @@
-def main():
-    print("Hello, World!")
+from code import Game
+
+game = Game()
+game.init()
