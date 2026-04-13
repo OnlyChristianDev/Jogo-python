@@ -1,0 +1,117 @@
+﻿import pygame
+from pathlib import Path
+
+from code.consts.Window import HEIGHT
+
+ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
+PLAYER_IMAGE = ASSETS_DIR / "player.png"
+
+class Player:
+    def __init__(self):
+        self.width = 64
+        self.height = 64
+
+        self.rect = pygame.Rect(100, HEIGHT - 60 - self.height, self.width, self.height)
+
+        self.velocity_x = 0
+        self.velocity_y = 0
+
+        self.speed = 5
+        self.jump_power = -15
+        self.gravity = 0.8
+        self.on_ground = False
+
+        self.facing_right = True
+
+        # animação
+        self.animations = self.load_animations()
+        self.current_animation = "idle"
+        self.current_frame = 0
+        self.animation_timer = 0
+        self.animation_speed = 0.1
+
+    def load_animations(self):
+        image = pygame.image.load(str(PLAYER_IMAGE)).convert_alpha()
+
+        frame_height = image.get_height()
+        frame_width = frame_height
+        frame_count = image.get_width()
+
+        frames = []
+        for i in range(frame_count):
+            frame = image.subsurface((i * frame_width, 0, frame_width, frame_height))
+            frame = pygame.transform.scale(frame, (self.width, self.height))
+            frames.append(frame)
+
+        self.draw_offset_y = self.calculate_draw_offset(image, frame_height)
+
+        return {
+            "idle": frames,
+            "run": frames,
+            "jump": frames
+        }
+
+    def calculate_draw_offset(self, image, frame_height):
+        frame = image.subsurface((0, 0, frame_height, frame_height))
+        bottom = -1
+        for y in range(frame_height):
+            for x in range(frame_height):
+                if frame.get_at((x, y)).a != 0:
+                    bottom = max(bottom, y)
+
+        if bottom < 0:
+            return 0
+
+        visible_bottom_scaled = (bottom + 1) * self.height / frame_height
+        return int(round(self.height - visible_bottom_scaled))
+
+    def handle_input(self):
+        keys = pygame.key.get_pressed()
+
+        self.velocity_x = 0
+
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            self.velocity_x = self.speed
+            self.facing_right = True
+
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            self.velocity_x = -self.speed
+            self.facing_right = False
+
+        if (keys[pygame.K_SPACE] or keys[pygame.K_w] or keys[pygame.K_UP]) and self.on_ground:
+            self.velocity_y = self.jump_power
+            self.on_ground = False
+
+    def update(self, dt, ground_rect):
+        self.rect.x += self.velocity_x
+
+        self.velocity_y += self.gravity
+        self.rect.y += self.velocity_y
+
+        if self.rect.bottom >= ground_rect.top:
+            self.rect.bottom = ground_rect.top
+            self.velocity_y = 0
+            self.on_ground = True
+
+        if not self.on_ground:
+            self.current_animation = "jump"
+        elif self.velocity_x != 0:
+            self.current_animation = "run"
+        else:
+            self.current_animation = "idle"
+
+        frames = self.animations[self.current_animation]
+
+        self.animation_timer += dt
+        if self.animation_timer >= self.animation_speed:
+            self.animation_timer = 0
+            self.current_frame = (self.current_frame + 1) % len(frames)
+
+    def draw(self, screen):
+        frame = self.animations[self.current_animation][self.current_frame]
+
+        if not self.facing_right:
+            frame = pygame.transform.flip(frame, True, False)
+
+        draw_y = self.rect.y + getattr(self, 'draw_offset_y', 0)
+        screen.blit(frame, (self.rect.x, draw_y))
