@@ -5,7 +5,7 @@ import code.consts.Window
 pygame.init()
 window = code.consts.Window
 
-ASSETS_DIR = Path(__file__).resolve().parent / "assets"
+ASSETS_DIR = Path(__file__).resolve().parents[1] / "assets"
 MENU_MUSIC = ASSETS_DIR / "menuMusic.wav"
 
 class Menu:
@@ -18,6 +18,7 @@ class Menu:
         self.opcao_selecionada = 0
         self.fundo_menu = pygame.image.load(str(ASSETS_DIR / "menu.png"))
         self.fundo_menu = pygame.transform.scale(self.fundo_menu, (window.WIDTH, window.HEIGTH))
+        self.option_rects = []
         self.initMusic()
 
     def openMenu(self):
@@ -34,18 +35,22 @@ class Menu:
     def initOptions(self):
         tela = pygame.display.get_surface()
 
+        self.option_rects = []
+
         for i, opcao in enumerate(self.opcoes):
             cor = (255, 255, 255)
 
             if i == self.opcao_selecionada:
-                cor = (255, 0, 0)
+                cor = (31, 161, 19)
 
             texto = self.fonte.render(opcao, True, cor)
 
             x = window.WIDTH // 2 - texto.get_width() // 2
             y = 200 + i * 60
 
-            tela.blit(texto, (x, y))
+            rect = texto.get_rect(topleft=(x, y))
+            self.option_rects.append((i, rect))
+            tela.blit(texto, rect)
 
     def executeOption(self):
         opcao = self.opcoes[self.opcao_selecionada]
@@ -59,3 +64,18 @@ class Menu:
         elif opcao == "Exit":
             pygame.quit()
             exit()
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            pos = event.pos
+            for i, rect in self.option_rects:
+                if rect.collidepoint(pos):
+                    self.opcao_selecionada = i
+                    self.executeOption()
+                    break
+        elif event.type == pygame.MOUSEMOTION:
+            pos = event.pos
+            for i, rect in self.option_rects:
+                if rect.collidepoint(pos):
+                    self.opcao_selecionada = i
+                    break
