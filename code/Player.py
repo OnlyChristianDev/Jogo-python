@@ -5,6 +5,7 @@ from code.consts.Window import HEIGHT
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 PLAYER_IMAGE = ASSETS_DIR / "player.png"
+PLAYER_STOPPED_IMAGE = ASSETS_DIR / "player_stoped.png"
 
 class Player:
     def __init__(self):
@@ -26,6 +27,7 @@ class Player:
         # animação
         self.animations = self.load_animations()
         self.current_animation = "idle"
+        self.previous_animation = None
         self.current_frame = 0
         self.animation_timer = 0
         self.animation_speed = 0.1
@@ -35,21 +37,48 @@ class Player:
 
         frame_height = image.get_height()
         frame_width = frame_height
-        frame_count = image.get_width()
+        frame_count = image.get_width() // frame_width
+        if frame_count <= 0:
+            raise ValueError(
+                f"Invalid player sprite sheet width {image.get_width()} for frame width {frame_width}"
+            )
 
         frames = []
         for i in range(frame_count):
-            frame = image.subsurface((i * frame_width, 0, frame_width, frame_height))
+            frame_rect = pygame.Rect(i * frame_width, 0, frame_width, frame_height)
+            frame = image.subsurface(frame_rect)
             frame = pygame.transform.scale(frame, (self.width, self.height))
             frames.append(frame)
 
         self.draw_offset_y = self.calculate_draw_offset(image, frame_height)
 
+        idle_frames = self.load_stopped_animation()
+
         return {
-            "idle": frames,
+            "idle": idle_frames,
             "run": frames,
             "jump": frames
         }
+    
+    def load_stopped_animation(self):
+        image = pygame.image.load(str(PLAYER_STOPPED_IMAGE)).convert_alpha()
+
+        frame_height = image.get_height()
+        frame_width = frame_height
+        frame_count = image.get_width() // frame_width
+        if frame_count <= 0:
+            raise ValueError(
+                f"Invalid stopped sprite sheet width {image.get_width()} for frame width {frame_width}"
+            )
+
+        frames = []
+        for i in range(frame_count):
+            frame_rect = pygame.Rect(i * frame_width, 0, frame_width, frame_height)
+            frame = image.subsurface(frame_rect)
+            frame = pygame.transform.scale(frame, (self.width, self.height))
+            frames.append(frame)
+
+        return frames
 
     def calculate_draw_offset(self, image, frame_height):
         frame = image.subsurface((0, 0, frame_height, frame_height))
@@ -99,6 +128,12 @@ class Player:
             self.current_animation = "run"
         else:
             self.current_animation = "idle"
+
+        # Reset frame when animation changes
+        if self.current_animation != self.previous_animation:
+            self.current_frame = 0
+            self.animation_timer = 0
+            self.previous_animation = self.current_animation
 
         frames = self.animations[self.current_animation]
 

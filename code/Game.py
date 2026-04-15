@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
-import code.Menu
 import code.Level
+import code.Menu
 
 class Game:
     def init(self):
