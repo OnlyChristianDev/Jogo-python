@@ -17,7 +17,7 @@ class Player:
         self.velocity_x = 0
         self.velocity_y = 0
 
-        self.speed = 5
+        self.speed = 4
         self.jump_power = -15
         self.gravity = 0.8
         self.on_ground = False
@@ -129,7 +129,6 @@ class Player:
         else:
             self.current_animation = "idle"
 
-        # Reset frame when animation changes
         if self.current_animation != self.previous_animation:
             self.current_frame = 0
             self.animation_timer = 0
