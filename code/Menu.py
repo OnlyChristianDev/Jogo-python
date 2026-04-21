@@ -3,6 +3,7 @@ from pathlib import Path
 import code.consts.Window
 
 pygame.init()
+pygame.mixer.init()
 window = code.consts.Window
 
 ASSETS_DIR = Path(__file__).resolve().parents[1] / "assets"
@@ -10,14 +11,14 @@ MENU_MUSIC = ASSETS_DIR / "menuMusic.wav"
 
 class Menu:
     def __init__(self):
-        pygame.display.set_mode((window.WIDTH, window.HEIGTH))
+        pygame.display.set_mode((window.WIDTH, window.HEIGHT))
         pygame.display.set_caption("Frog game")
 
         self.fonte = pygame.font.SysFont("PressStart2P-Regular.ttf", 50)
         self.opcoes = ["Start", "Settings", "Exit"]
         self.opcao_selecionada = 0
         self.fundo_menu = pygame.image.load(str(ASSETS_DIR / "menu.png"))
-        self.fundo_menu = pygame.transform.scale(self.fundo_menu, (window.WIDTH, window.HEIGTH))
+        self.fundo_menu = pygame.transform.scale(self.fundo_menu, (window.WIDTH, window.HEIGHT))
         self.option_rects = []
         self.initMusic()
 
@@ -27,7 +28,6 @@ class Menu:
         self.initOptions()
     
     def initMusic(self):
-        pygame.mixer.init()
         pygame.mixer.music.load(str(MENU_MUSIC))
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
@@ -56,10 +56,12 @@ class Menu:
         opcao = self.opcoes[self.opcao_selecionada]
 
         if opcao == "Start":
-            print("Iniciar jogo 🚀")
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
+            return "start"
 
         elif opcao == "Settings":
-            print("Abrir configurações ⚙️")
+            return "settings"
 
         elif opcao == "Exit":
             pygame.quit()
@@ -71,11 +73,12 @@ class Menu:
             for i, rect in self.option_rects:
                 if rect.collidepoint(pos):
                     self.opcao_selecionada = i
-                    self.executeOption()
-                    break
+                    return self.executeOption()
         elif event.type == pygame.MOUSEMOTION:
             pos = event.pos
             for i, rect in self.option_rects:
                 if rect.collidepoint(pos):
                     self.opcao_selecionada = i
                     break
+
+        return None
