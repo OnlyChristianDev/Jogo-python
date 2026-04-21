@@ -24,13 +24,15 @@ class Player:
 
         self.facing_right = True
 
-        # animação
         self.animations = self.load_animations()
         self.current_animation = "idle"
         self.previous_animation = None
         self.current_frame = 0
         self.animation_timer = 0
         self.animation_speed = 0.1
+
+        self.jump_sound = pygame.mixer.Sound(str(ASSETS_DIR / "jump.mp3"))
+        self.jump_sound.set_volume(0.5)
 
     def load_animations(self):
         image = pygame.image.load(str(PLAYER_IMAGE)).convert_alpha()
@@ -108,6 +110,9 @@ class Player:
             self.facing_right = False
 
         if (keys[pygame.K_SPACE] or keys[pygame.K_w] or keys[pygame.K_UP]) and self.on_ground:
+            
+            self.jump_sound.play()
+
             self.velocity_y = self.jump_power
             self.on_ground = False
 

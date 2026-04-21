@@ -9,6 +9,7 @@ GRASS_TILESET = ASSETS_DIR / "tilesetgrass.png"
 SKY_IMAGE = ASSETS_DIR / "sky.png"
 CLOUD1_IMAGE = ASSETS_DIR / "cloud1.png"
 CLOUD2_IMAGE = ASSETS_DIR / "cloud2.png"
+HEART_IMAGE = ASSETS_DIR / "Heart.png"
 ORIGINAL_TILE_SIZE = 27
 GROUND_HEIGHT = 60
 
@@ -25,6 +26,9 @@ class Level:
         
         cloud1_img = pygame.image.load(str(CLOUD1_IMAGE)).convert_alpha()
         cloud2_img = pygame.image.load(str(CLOUD2_IMAGE)).convert_alpha()
+        
+        heart_img = pygame.image.load(str(HEART_IMAGE)).convert_alpha()
+        self.heart = pygame.transform.scale(heart_img, (100, 100))
         
         self.clouds = [
             {"image": cloud1_img, "x": 200, "y": 420, "speed": 30},
@@ -48,6 +52,7 @@ class Level:
 
     def draw(self, screen):
         screen.blit(self.sky, (0, 0))
+        screen.blit(self.heart, (10, 10))
         
         for cloud in self.clouds:
             screen.blit(cloud["image"], (cloud["x"], cloud["y"]))
