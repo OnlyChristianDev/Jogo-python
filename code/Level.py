@@ -2,6 +2,7 @@
 from pathlib import Path
 import code.consts.Window
 from code.Player import Player
+from code.Enemie import Enemie
 
 window = code.consts.Window
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -37,6 +38,7 @@ class Level:
         ]
         
         self.player = Player()
+        self.enemy = Enemie()
 
     def handle_event(self, event):
         pass
@@ -44,6 +46,7 @@ class Level:
     def update(self, dt):
         self.player.handle_input()
         self.player.update(dt, self.ground_rect)
+        self.enemy.update(dt)
         
         for cloud in self.clouds:
             cloud["x"] -= cloud["speed"] * dt
@@ -64,3 +67,4 @@ class Level:
             screen.blit(self.grass_tile, (x, ground_y))
             x += tile_width
         self.player.draw(screen)
+        self.enemy.draw(screen)

@@ -12,7 +12,7 @@ MENU_MUSIC = ASSETS_DIR / "menuMusic.wav"
 class Menu:
     def __init__(self):
         pygame.display.set_mode((window.WIDTH, window.HEIGHT))
-        pygame.display.set_caption("Frog game")
+        pygame.display.set_caption("Poopocalypse Frog")
 
         self.fonte = pygame.font.SysFont("monoespace", 50, bold=True)
         self.opcoes = ["Start", "Exit"]
@@ -44,7 +44,7 @@ class Menu:
             cor = (255, 255, 255)
 
             if i == self.opcao_selecionada:
-                cor = (31, 161, 19)
+                cor = (252, 186, 3)
 
             texto = self.fonte.render(opcao, True, cor)
 
