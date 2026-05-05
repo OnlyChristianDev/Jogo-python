@@ -3,6 +3,7 @@ from pathlib import Path
 import code.consts.Window
 from code.Player import Player
 from code.Enemie import Enemie
+from code.Score import Score
 
 window = code.consts.Window
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -41,6 +42,7 @@ class Level:
         self.enemies = [Enemie()]
         self.enemy_spawn_timer = 0
         self.enemy_spawn_interval = 10
+        self.score = Score()
 
     def handle_event(self, event):
         pass
@@ -48,6 +50,7 @@ class Level:
     def update(self, dt):
         self.player.handle_input()
         self.player.update(dt, self.ground_rect)
+        self.score.update(dt)
         
         self.enemy_spawn_timer += dt
         if self.enemy_spawn_timer >= self.enemy_spawn_interval and len(self.enemies) < 5:
@@ -65,6 +68,7 @@ class Level:
     def draw(self, screen):
         screen.blit(self.sky, (0, 0))
         screen.blit(self.heart, (10, 10))
+        self.score.draw(screen)
         
         for cloud in self.clouds:
             screen.blit(cloud["image"], (cloud["x"], cloud["y"]))
