@@ -2,6 +2,8 @@
 from pathlib import Path
 import code.consts.Window
 from code.Player import Player
+from code.Enemie import Enemie
+from code.Score import Score
 
 window = code.consts.Window
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -9,6 +11,7 @@ GRASS_TILESET = ASSETS_DIR / "tilesetgrass.png"
 SKY_IMAGE = ASSETS_DIR / "sky.png"
 CLOUD1_IMAGE = ASSETS_DIR / "cloud1.png"
 CLOUD2_IMAGE = ASSETS_DIR / "cloud2.png"
+HEART_IMAGE = ASSETS_DIR / "Heart.png"
 ORIGINAL_TILE_SIZE = 27
 GROUND_HEIGHT = 60
 
@@ -26,6 +29,9 @@ class Level:
         cloud1_img = pygame.image.load(str(CLOUD1_IMAGE)).convert_alpha()
         cloud2_img = pygame.image.load(str(CLOUD2_IMAGE)).convert_alpha()
         
+        heart_img = pygame.image.load(str(HEART_IMAGE)).convert_alpha()
+        self.heart = pygame.transform.scale(heart_img, (100, 100))
+        
         self.clouds = [
             {"image": cloud1_img, "x": 200, "y": 420, "speed": 30},
             {"image": cloud2_img, "x": 600, "y": 420, "speed": 20},
@@ -33,6 +39,10 @@ class Level:
         ]
         
         self.player = Player()
+        self.enemies = [Enemie()]
+        self.enemy_spawn_timer = 0
+        self.enemy_spawn_interval = 10
+        self.score = Score()
 
     def handle_event(self, event):
         pass
@@ -40,6 +50,15 @@ class Level:
     def update(self, dt):
         self.player.handle_input()
         self.player.update(dt, self.ground_rect)
+        self.score.update(dt)
+        
+        self.enemy_spawn_timer += dt
+        if self.enemy_spawn_timer >= self.enemy_spawn_interval and len(self.enemies) < 5:
+            self.enemies.append(Enemie())
+            self.enemy_spawn_timer = 0
+        
+        for enemy in self.enemies:
+            enemy.update(dt, self.ground_rect)
         
         for cloud in self.clouds:
             cloud["x"] -= cloud["speed"] * dt
@@ -48,6 +67,8 @@ class Level:
 
     def draw(self, screen):
         screen.blit(self.sky, (0, 0))
+        screen.blit(self.heart, (10, 10))
+        self.score.draw(screen)
         
         for cloud in self.clouds:
             screen.blit(cloud["image"], (cloud["x"], cloud["y"]))
@@ -59,3 +80,5 @@ class Level:
             screen.blit(self.grass_tile, (x, ground_y))
             x += tile_width
         self.player.draw(screen)
+        for enemy in self.enemies:
+            enemy.draw(screen)
