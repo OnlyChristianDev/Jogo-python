@@ -10,4 +10,4 @@ class Score:
 
     def draw(self, screen):
         text = self.font.render(f"Score: {int(self.value)}", True, (255, 255, 255))
-        screen.blit(text, (30, 80)) 
+        screen.blit(text, (10, 40)) 

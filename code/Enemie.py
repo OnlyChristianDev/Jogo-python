@@ -8,7 +8,7 @@ class Enemie:
         self.speed = 100
         self.direction = 1 
         self.spawn_timer = 0
-        self.spawn_interval = random.uniform(1, 5) 
+        self.spawn_interval = random.uniform(1, 3) 
         self.squares = [] 
 
     def update(self, dt, ground_rect):
