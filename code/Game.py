@@ -21,14 +21,17 @@ class Game:
                         if action == "start":
                             self.state = "level"
                     elif self.state == "level":
-                        self.level.handle_event(evento)
+                        action = self.level.handle_event(evento)
+                        if action == "back_to_menu":
+                            self.state = "menu"
+                            self.level = code.Level.Level()
 
             dt = self.clock.tick(60) / 1000
 
             if self.state == "menu":
                 self.menu.openMenu()
             elif self.state == "level":
-                self.level.update(dt)
+                self.level.update(dt)        
                 self.level.draw(pygame.display.get_surface())
 
             pygame.display.flip()
