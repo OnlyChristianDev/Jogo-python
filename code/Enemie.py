@@ -38,16 +38,10 @@ class Enemie:
         self.frame_index = 0
         self.animation_timer = 0
         self.animation_speed = 0.15 
+        self.prev_x = self.rect.x 
 
-    def update(self, dt, ground_rect, target_x=None):
-
-        if target_x is not None:
-            if target_x > self.rect.x:
-                self.direction = 1
-            elif target_x < self.rect.x:
-                self.direction = -1
-            else:
-                self.direction = 0
+    def update(self, dt, ground_rect, player_x=None):
+        self.prev_x = self.rect.x
 
         self.rect.x += self.speed * dt * self.direction
         if self.rect.right > window.WIDTH or self.rect.left < 0:
@@ -60,7 +54,6 @@ class Enemie:
             square = pygame.Rect(self.rect.centerx - 10, self.rect.centery, 20, 20)
             self.squares.append(square)
             self.poop_animation_frames[id(square)] = {'frame': 0, 'timer': 0}
-
 
         for square in self.squares[:]:
             square.y += 200 * dt 
@@ -79,6 +72,12 @@ class Enemie:
                     if self.poop_animation_frames[poop_id]['timer'] >= 0.15:
                         self.poop_animation_frames[poop_id]['timer'] = 0
                         self.poop_animation_frames[poop_id]['frame'] = (self.poop_animation_frames[poop_id]['frame'] + 1) % 5
+
+        if player_x is not None:
+            if (self.prev_x < player_x <= self.rect.x) or (self.prev_x > player_x >= self.rect.x):
+                square = pygame.Rect(self.rect.centerx - 10, self.rect.centery, 20, 20)
+                self.squares.append(square)
+                self.poop_animation_frames[id(square)] = {'frame': 0, 'timer': 0}
 
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:

@@ -35,6 +35,18 @@ class Level:
             {"image": cloud1_img, "x": 1000, "y": 420, "speed": 25},
         ]
         
+        tree1_img = pygame.image.load(str(ASSETS_DIR / "tree.png")).convert_alpha()
+        tree2_img = pygame.image.load(str(ASSETS_DIR / "tree2.png")).convert_alpha()
+        
+        tree1_img = pygame.transform.scale(tree1_img, (tree1_img.get_width() * 4, tree1_img.get_height() * 4))
+        tree2_img = pygame.transform.scale(tree2_img, (tree2_img.get_width() * 4, tree2_img.get_height() * 4))
+        
+        ground_y = window.HEIGHT - GROUND_HEIGHT
+        self.trees = [
+            {"image": tree1_img, "x": 0, "y": ground_y - tree1_img.get_height() + 3},
+            {"image": tree2_img, "x": 1200, "y": ground_y - tree2_img.get_height()},
+        ]
+        
         self.player = Player()
         self.life = Life()
         self.enemies = [Enemie()]
@@ -61,7 +73,7 @@ class Level:
             
             for index, enemy in enumerate(self.enemies):
                 if index == 0:
-                    enemy.update(dt, self.ground_rect, target_x=self.player.rect.x)
+                    enemy.update(dt, self.ground_rect, player_x=self.player.rect.x)
                 else:
                     enemy.update(dt, self.ground_rect)
                 for square in enemy.squares[:]:
@@ -96,6 +108,10 @@ class Level:
             while x < window.WIDTH:
                 screen.blit(self.grass_tile, (x, ground_y))
                 x += tile_width
+            
+            for tree in self.trees:
+                screen.blit(tree["image"], (tree["x"], tree["y"]))
+            
             self.player.draw(screen)
             for enemy in self.enemies:
                 enemy.draw(screen)
