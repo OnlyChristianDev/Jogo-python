@@ -29,6 +29,9 @@ class Player:
         self.animation_timer = 0
         self.animation_speed = 0.1
 
+        self.is_hurt = False
+        self.hurt_timer = 0
+
         self.rect = pygame.Rect(100, HEIGHT - 60 - self.visible_height, self.visible_width, self.visible_height)
 
         self.jump_sound = pygame.mixer.Sound(str(ASSETS_DIR / "jump.mp3"))
@@ -73,11 +76,13 @@ class Player:
             frames.append(frame)
 
         idle_frames = self.load_stopped_animation()
+        hurt_frames = self.load_hurt_animation()
 
         return {
             "idle": idle_frames,
             "run": frames,
-            "jump": frames
+            "jump": frames,
+            "hurt": hurt_frames
         }
     
     def load_stopped_animation(self):
@@ -89,6 +94,26 @@ class Player:
         if frame_count <= 0:
             raise ValueError(
                 f"Invalid stopped sprite sheet width {image.get_width()} for frame width {frame_width}"
+            )
+
+        frames = []
+        for i in range(frame_count):
+            frame_rect = pygame.Rect(i * frame_width, 0, frame_width, frame_height)
+            frame = image.subsurface(frame_rect)
+            frame = pygame.transform.scale(frame, (self.width, self.height))
+            frames.append(frame)
+
+        return frames
+
+    def load_hurt_animation(self):
+        image = pygame.image.load(str(ASSETS_DIR / "player_hurt.png")).convert_alpha()
+
+        frame_height = image.get_height()
+        frame_width = frame_height
+        frame_count = image.get_width() // frame_width
+        if frame_count <= 0:
+            raise ValueError(
+                f"Invalid hurt sprite sheet width {image.get_width()} for frame width {frame_width}"
             )
 
         frames = []
@@ -134,10 +159,17 @@ class Player:
             self.velocity_y = self.jump_power
             self.on_ground = False
 
+    def take_damage(self):
+        if not self.is_hurt:
+            self.is_hurt = True
+            self.hurt_timer = 30 
+            self.current_animation = "hurt"
+            self.current_frame = 0
+            self.animation_timer = 0
+
     def update(self, dt, ground_rect):
         self.rect.x += self.velocity_x
 
-        # Clamp x position to screen bounds
         if self.rect.left < 0:
             self.rect.left = 0
         elif self.rect.right > WIDTH:
@@ -146,7 +178,6 @@ class Player:
         self.velocity_y += self.gravity
         self.rect.y += self.velocity_y
 
-        # Clamp y position to screen bounds
         if self.rect.top < 0:
             self.rect.top = 0
         elif self.rect.bottom > HEIGHT:
@@ -159,12 +190,18 @@ class Player:
             self.velocity_y = 0
             self.on_ground = True
 
-        if not self.on_ground:
-            self.current_animation = "jump"
-        elif self.velocity_x != 0:
-            self.current_animation = "run"
+        if self.is_hurt:
+            self.current_animation = "hurt"
+            self.hurt_timer -= 1
+            if self.hurt_timer <= 0:
+                self.is_hurt = False
         else:
-            self.current_animation = "idle"
+            if not self.on_ground:
+                self.current_animation = "jump"
+            elif self.velocity_x != 0:
+                self.current_animation = "run"
+            else:
+                self.current_animation = "idle"
 
         if self.current_animation != self.previous_animation:
             self.current_frame = 0

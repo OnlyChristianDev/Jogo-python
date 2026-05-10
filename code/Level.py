@@ -59,12 +59,16 @@ class Level:
                 self.enemies.append(Enemie())
                 self.enemy_spawn_timer = 0
             
-            for enemy in self.enemies:
-                enemy.update(dt, self.ground_rect)
+            for index, enemy in enumerate(self.enemies):
+                if index == 0:
+                    enemy.update(dt, self.ground_rect, target_x=self.player.rect.x)
+                else:
+                    enemy.update(dt, self.ground_rect)
                 for square in enemy.squares[:]:
                     if square.colliderect(self.player.rect):
                         enemy.squares.remove(square)
                         self.life.remove_life()
+                        self.player.take_damage()
             
             for cloud in self.clouds:
                 cloud["x"] -= cloud["speed"] * dt
