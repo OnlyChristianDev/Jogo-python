@@ -19,6 +19,8 @@ class Menu:
         self.opcao_selecionada = 0
         self.fundo_menu = pygame.image.load(str(ASSETS_DIR / "menu.png"))
         self.fundo_menu = pygame.transform.scale(self.fundo_menu, (window.WIDTH, window.HEIGHT))
+        self.controles_img = pygame.image.load(str(ASSETS_DIR / "controles.png"))
+        self.controles_img = pygame.transform.scale(self.controles_img, (320, 220))
         self.option_rects = []
         self.initMusic()
 
@@ -26,6 +28,13 @@ class Menu:
         tela = pygame.display.get_surface()
         tela.blit(self.fundo_menu, (0, 0))
         self.initOptions()
+        self.drawControlesImage(tela)
+
+    def drawControlesImage(self, tela):
+        margem = 20
+        x = margem
+        y = window.HEIGHT - self.controles_img.get_height() - margem
+        tela.blit(self.controles_img, (x, y))
     
     def initMusic(self):
         pygame.mixer.music.load(str(MENU_MUSIC))

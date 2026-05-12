@@ -18,6 +18,7 @@ GROUND_HEIGHT = 60
 class Level:
     def __init__(self):
         self.ground_rect = pygame.Rect(0, window.HEIGHT - GROUND_HEIGHT, window.WIDTH, GROUND_HEIGHT)
+        self.font = pygame.font.SysFont("monoespace", 24, bold=True)
         
         sky_img = pygame.image.load(str(SKY_IMAGE)).convert_alpha()
         self.sky = pygame.transform.scale(sky_img, (window.WIDTH, window.HEIGHT - GROUND_HEIGHT))
@@ -54,6 +55,12 @@ class Level:
         self.enemy_spawn_interval = 10
         self.score = Score()
         self.game_over = False
+        self.win_sound_played = False
+
+        win_img = pygame.image.load(str(ASSETS_DIR / "winScreen.png")).convert_alpha()
+        self.win_image = pygame.transform.scale(win_img, (window.WIDTH, window.HEIGHT))
+        self.win_sound = pygame.mixer.Sound(str(ASSETS_DIR / "win.mp3"))
+        self.win_sound.set_volume(0.5)
 
     def handle_event(self, event):
         if self.game_over and event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
@@ -87,13 +94,26 @@ class Level:
                 if cloud["x"] + cloud["image"].get_width() < 0:
                     cloud["x"] = window.WIDTH
         
+        if self.score.won and not self.win_sound_played:
+            self.game_over = True
+            pygame.mixer.music.stop()
+            pygame.mixer.stop()
+            self.win_sound.play()
+            self.win_sound_played = True
+
         if self.life.lives <= 0:
             self.game_over = True
 
     def draw(self, screen):
         if self.game_over:
-            screen.blit(self.sky, (0, 0))
-            self.life.draw(screen)
+            if self.score.won:
+                screen.blit(self.win_image, (0, 0))
+                text = self.font.render("Aperte Enter para voltar ao menu", True, (255, 255, 255))
+                text_y = window.HEIGHT - 50
+                screen.blit(text, (window.WIDTH // 2 - text.get_width() // 2, text_y))
+            else:
+                screen.blit(self.sky, (0, 0))
+                self.life.draw(screen)
         else:
             screen.blit(self.sky, (0, 0))
             self.life.draw(screen)
