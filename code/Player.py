@@ -1,11 +1,7 @@
 ﻿import pygame
-from pathlib import Path
+from code.consts.Assets import get_asset_file
 
 from code.consts.Window import HEIGHT, WIDTH
-
-ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
-PLAYER_IMAGE = ASSETS_DIR / "player.png"
-PLAYER_STOPPED_IMAGE = ASSETS_DIR / "player_stoped.png"
 
 class Player:
     def __init__(self):
@@ -34,11 +30,11 @@ class Player:
 
         self.rect = pygame.Rect(100, HEIGHT - 60 - self.visible_height, self.visible_width, self.visible_height)
 
-        self.jump_sound = pygame.mixer.Sound(str(ASSETS_DIR / "jump.mp3"))
+        self.jump_sound = pygame.mixer.Sound(str(get_asset_file("jump.mp3")))
         self.jump_sound.set_volume(0.5)
 
     def load_animations(self):
-        image = pygame.image.load(str(PLAYER_IMAGE)).convert_alpha()
+        image = pygame.image.load(str(get_asset_file("player.png"))).convert_alpha()
 
         frame_height = image.get_height()
         frame_width = frame_height
@@ -86,7 +82,7 @@ class Player:
         }
     
     def load_stopped_animation(self):
-        image = pygame.image.load(str(PLAYER_STOPPED_IMAGE)).convert_alpha()
+        image = pygame.image.load(str(get_asset_file("player_stoped.png"))).convert_alpha()
 
         frame_height = image.get_height()
         frame_width = frame_height
@@ -106,7 +102,7 @@ class Player:
         return frames
 
     def load_hurt_animation(self):
-        image = pygame.image.load(str(ASSETS_DIR / "player_hurt.png")).convert_alpha()
+        image = pygame.image.load(str(get_asset_file("player_hurt.png"))).convert_alpha()
 
         frame_height = image.get_height()
         frame_width = frame_height

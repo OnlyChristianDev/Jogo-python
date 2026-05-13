@@ -1,13 +1,10 @@
 import pygame
-from pathlib import Path
+from code.consts.Assets import get_asset_file
 import code.consts.Window
 
 pygame.init()
 pygame.mixer.init()
 window = code.consts.Window
-
-ASSETS_DIR = Path(__file__).resolve().parents[1] / "assets"
-MENU_MUSIC = ASSETS_DIR / "menuMusic.wav"
 
 class Menu:
     def __init__(self):
@@ -17,9 +14,9 @@ class Menu:
         self.fonte = pygame.font.SysFont("monoespace", 50, bold=True)
         self.opcoes = ["Start", "Exit"]
         self.opcao_selecionada = 0
-        self.fundo_menu = pygame.image.load(str(ASSETS_DIR / "menu.png"))
+        self.fundo_menu = pygame.image.load(str(get_asset_file("menu.png")))
         self.fundo_menu = pygame.transform.scale(self.fundo_menu, (window.WIDTH, window.HEIGHT))
-        self.controles_img = pygame.image.load(str(ASSETS_DIR / "controles.png"))
+        self.controles_img = pygame.image.load(str(get_asset_file("controles.png")))
         self.controles_img = pygame.transform.scale(self.controles_img, (320, 220))
         self.option_rects = []
         self.initMusic()
@@ -37,7 +34,7 @@ class Menu:
         tela.blit(self.controles_img, (x, y))
     
     def initMusic(self):
-        pygame.mixer.music.load(str(MENU_MUSIC))
+        pygame.mixer.music.load(str(get_asset_file("menuMusic.wav")))
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
 
@@ -71,7 +68,7 @@ class Menu:
             pygame.mixer.music.stop()
             pygame.mixer.music.unload()
 
-            level_music = ASSETS_DIR / "levelMusic.wav"
+            level_music = get_asset_file("levelMusic.wav")
             pygame.mixer.music.load(str(level_music))
             pygame.mixer.music.set_volume(0.2)
             pygame.mixer.music.play(-1)

@@ -1,11 +1,7 @@
 import pygame
 import random
-from pathlib import Path
+from code.consts.Assets import get_asset_file
 import code.consts.Window as window
-
-ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
-POOP_IMAGE = ASSETS_DIR / "poop.png"
-BIRD_IMAGE = ASSETS_DIR / "Bird.png"
 
 class Enemie:
     def __init__(self):
@@ -15,10 +11,10 @@ class Enemie:
         self.spawn_timer = 0
         self.spawn_interval = random.uniform(1, 3) 
         self.squares = [] 
-        self.poop_image = pygame.image.load(str(POOP_IMAGE)).convert_alpha()
+        self.poop_image = pygame.image.load(str(get_asset_file("poop.png"))).convert_alpha()
         self.poop_image = pygame.transform.scale(self.poop_image, (18, 18))
 
-        self.poop_sheet = pygame.image.load(str(POOP_IMAGE)).convert_alpha()
+        self.poop_sheet = pygame.image.load(str(get_asset_file("poop.png"))).convert_alpha()
         self.poop_frames = []
         for i in range(5):
             frame = self.poop_sheet.subsurface((i * 89, 0, 89, 89))
@@ -27,7 +23,7 @@ class Enemie:
         
         self.poop_animation_frames = {} 
 
-        self.bird_sheet = pygame.image.load(str(BIRD_IMAGE)).convert_alpha()
+        self.bird_sheet = pygame.image.load(str(get_asset_file("Bird.png"))).convert_alpha()
         self.frames = []
         for i in range(8):
             frame = self.bird_sheet.subsurface((i * 16, 0, 16, 15))
