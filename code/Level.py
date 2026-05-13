@@ -1,5 +1,5 @@
 ﻿import pygame
-from pathlib import Path
+from code.consts.Assets import get_asset_file
 import code.consts.Window
 from code.Player import Player
 from code.Enemie import Enemie
@@ -7,11 +7,6 @@ from code.Score import Score
 from code.Life import Life
 
 window = code.consts.Window
-ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
-GRASS_TILESET = ASSETS_DIR / "tilesetgrass.png"
-SKY_IMAGE = ASSETS_DIR / "sky.png"
-CLOUD1_IMAGE = ASSETS_DIR / "cloud1.png"
-CLOUD2_IMAGE = ASSETS_DIR / "cloud2.png"
 ORIGINAL_TILE_SIZE = 27
 GROUND_HEIGHT = 60
 
@@ -20,15 +15,15 @@ class Level:
         self.ground_rect = pygame.Rect(0, window.HEIGHT - GROUND_HEIGHT, window.WIDTH, GROUND_HEIGHT)
         self.font = pygame.font.SysFont("monoespace", 24, bold=True)
         
-        sky_img = pygame.image.load(str(SKY_IMAGE)).convert_alpha()
+        sky_img = pygame.image.load(str(get_asset_file("sky.png"))).convert_alpha()
         self.sky = pygame.transform.scale(sky_img, (window.WIDTH, window.HEIGHT - GROUND_HEIGHT))
         
-        grass_tile = pygame.image.load(str(GRASS_TILESET)).convert_alpha()
+        grass_tile = pygame.image.load(str(get_asset_file("tilesetgrass.png"))).convert_alpha()
         scaled_tile_size = GROUND_HEIGHT
         self.grass_tile = pygame.transform.scale(grass_tile, (scaled_tile_size, scaled_tile_size))
         
-        cloud1_img = pygame.image.load(str(CLOUD1_IMAGE)).convert_alpha()
-        cloud2_img = pygame.image.load(str(CLOUD2_IMAGE)).convert_alpha()
+        cloud1_img = pygame.image.load(str(get_asset_file("cloud1.png"))).convert_alpha()
+        cloud2_img = pygame.image.load(str(get_asset_file("cloud2.png"))).convert_alpha()
         
         self.clouds = [
             {"image": cloud1_img, "x": 200, "y": 420, "speed": 30},
@@ -36,8 +31,8 @@ class Level:
             {"image": cloud1_img, "x": 1000, "y": 420, "speed": 25},
         ]
         
-        tree1_img = pygame.image.load(str(ASSETS_DIR / "tree.png")).convert_alpha()
-        tree2_img = pygame.image.load(str(ASSETS_DIR / "tree2.png")).convert_alpha()
+        tree1_img = pygame.image.load(str(get_asset_file("tree.png"))).convert_alpha()
+        tree2_img = pygame.image.load(str(get_asset_file("tree2.png"))).convert_alpha()
         
         tree1_img = pygame.transform.scale(tree1_img, (tree1_img.get_width() * 4, tree1_img.get_height() * 4))
         tree2_img = pygame.transform.scale(tree2_img, (tree2_img.get_width() * 4, tree2_img.get_height() * 4))
@@ -57,9 +52,9 @@ class Level:
         self.game_over = False
         self.win_sound_played = False
 
-        win_img = pygame.image.load(str(ASSETS_DIR / "winScreen.png")).convert_alpha()
+        win_img = pygame.image.load(str(get_asset_file("winScreen.png"))).convert_alpha()
         self.win_image = pygame.transform.scale(win_img, (window.WIDTH, window.HEIGHT))
-        self.win_sound = pygame.mixer.Sound(str(ASSETS_DIR / "win.mp3"))
+        self.win_sound = pygame.mixer.Sound(str(get_asset_file("win.mp3")))
         self.win_sound.set_volume(0.5)
 
     def handle_event(self, event):
